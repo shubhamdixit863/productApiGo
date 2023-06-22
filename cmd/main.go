@@ -46,7 +46,9 @@ func main() {
 
 	r := mux.NewRouter()
 
-	r.HandleFunc("/", handler.GetProducts) // root route
+	r.HandleFunc("/", handler.GetProducts)                       // root route
+	r.HandleFunc("/product", handler.AddProduct).Methods("POST") // this api will only accept post request
+
 	fmt.Println("Server running at port 8080")
 
 	err := http.ListenAndServe(":8080", r)
