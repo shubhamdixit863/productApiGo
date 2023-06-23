@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"productApi/internal/entity"
 )
@@ -12,6 +13,45 @@ type ProductRepository struct {
 	// Db connection would go
 
 	Db *mongo.Database
+}
+
+func (pr *ProductRepository) DeleteProduct(productId string) error {
+
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(productId)
+	if err != nil {
+		return err
+	}
+	filter := bson.D{{"_id", objectId}}
+
+	_, err = pr.Db.Collection("movie").DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return err
+	}
+	if err != nil {
+
+		return err
+	}
+	return nil
+}
+
+// For getting the document by ID
+
+func (pr *ProductRepository) GetProduct(productId string) (entity.Product, error) {
+	var result entity.Product
+	// convert id string to ObjectId
+	objectId, err := primitive.ObjectIDFromHex(productId)
+	if err != nil {
+		return result, err
+	}
+	filter := bson.D{{"_id", objectId}}
+
+	err = pr.Db.Collection("movie").FindOne(context.TODO(), filter).Decode(&result)
+	if err != nil {
+
+		return result, err
+	}
+	return result, nil
 }
 
 func (pr *ProductRepository) SaveProduct(product entity.Product) error {

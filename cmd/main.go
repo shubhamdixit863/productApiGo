@@ -48,6 +48,8 @@ func main() {
 
 	r.HandleFunc("/", handler.GetProducts)                       // root route
 	r.HandleFunc("/product", handler.AddProduct).Methods("POST") // this api will only accept post request
+	r.HandleFunc("/product/{id}", handler.GetProductById).Methods("GET")
+	r.HandleFunc("/product/{id}", handler.DeleteProductById).Methods("DELETE")
 
 	fmt.Println("Server running at port 8080")
 
