@@ -95,3 +95,30 @@ func (h *Handler) GetProducts(w http.ResponseWriter, r *http.Request) {
 	//fmt.Fprintf(w, string(jsonData))
 
 }
+
+func (h *Handler) UpdateProductById(w http.ResponseWriter, r *http.Request) {
+
+	// We extract the route params
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
+		fmt.Fprintf(w, "id is missing in parameters")
+		fmt.Println("id is missing in parameters")
+	}
+
+	// We will also have the post body so that we can extract from the body
+	var requestBody dtos.ProductRequest
+	err := json.NewDecoder(r.Body).Decode(&requestBody)
+	if err != nil {
+		fmt.Fprintf(w, err.Error())
+	}
+
+	err = h.ProductService.UpdateProduct(id, requestBody)
+	if err != nil {
+		fmt.Fprintf(w, err.Error())
+	}
+
+	// We will content type application/json
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, "Product Updated")
+}

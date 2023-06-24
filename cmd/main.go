@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/jmoiron/sqlx"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
@@ -35,10 +36,21 @@ func MongoConnection() *mongo.Database {
 	return client.Database("movie", nil)
 }
 
+func MysqlConnection() *sqlx.DB {
+	db, err := sqlx.Connect("postgres", "user=foo dbname=bar sslmode=disable")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	return db
+}
+
 func main() {
 
-	db := MongoConnection()
-	productRepository := &repository.ProductRepository{Db: db}
+	//db := MongoConnection()
+	//	productRepository := &repository.ProductRepository{Db: db}
+
+	productRepository := &repository.ProductRepositoryMysql{Db: MysqlConnection()}
 	productService := &services.ProductService{ProductRepository: productRepository} // Dependency injection
 	handler := api.Handler{ProductService: productService}
 
@@ -50,6 +62,7 @@ func main() {
 	r.HandleFunc("/product", handler.AddProduct).Methods("POST") // this api will only accept post request
 	r.HandleFunc("/product/{id}", handler.GetProductById).Methods("GET")
 	r.HandleFunc("/product/{id}", handler.DeleteProductById).Methods("DELETE")
+	r.HandleFunc("/product/{id}", handler.UpdateProductById).Methods("PUT")
 
 	fmt.Println("Server running at port 8080")
 

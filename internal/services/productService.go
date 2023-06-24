@@ -10,7 +10,7 @@ import (
 type ProductService struct {
 
 	// Here we will pass productRepo as dependency
-	ProductRepository *repository.ProductRepository
+	ProductRepository repository.IProductRepository
 }
 
 func (pr *ProductService) DeleteProductById(productId string) error {
@@ -66,5 +66,21 @@ func (pr *ProductService) SaveProduct(request dtos.ProductRequest) error {
 	}
 
 	return pr.ProductRepository.SaveProduct(productEntity)
+
+}
+
+func (pr *ProductService) UpdateProduct(productId string, request dtos.ProductRequest) error {
+
+	// We create a dto here
+
+	productEntity := entity.Product{
+
+		Title:    request.Title,
+		Year:     request.Year,
+		Director: request.Director,
+		Cast:     request.Cast,
+	}
+
+	return pr.ProductRepository.UpdateProduct(productId, productEntity)
 
 }

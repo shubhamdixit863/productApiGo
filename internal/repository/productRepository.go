@@ -15,6 +15,16 @@ type ProductRepository struct {
 	Db *mongo.Database
 }
 
+func (pr *ProductRepository) UpdateProduct(productId string, product entity.Product) error {
+	objectId, err := primitive.ObjectIDFromHex(productId)
+	filter := bson.D{{"_id", objectId}}
+	update := bson.D{{"$set", bson.D{{"title", product.Title}}}}
+
+	_, err = pr.Db.Collection("movie").UpdateOne(context.TODO(), filter, update)
+
+	return err
+}
+
 func (pr *ProductRepository) DeleteProduct(productId string) error {
 
 	// convert id string to ObjectId
